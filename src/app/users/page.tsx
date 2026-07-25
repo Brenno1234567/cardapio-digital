@@ -86,15 +86,15 @@ export default function AdminUsersPage() {
     <div className="min-h-screen bg-fundo flex flex-col">
       <header className="bg-verde-escuro text-white p-4 md:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-md">
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/admin" className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-colors shrink-0">
+          <Link href="/cozinha" className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-colors shrink-0">
             <ArrowLeft size={20} />
           </Link>
           <h1 className="text-base sm:text-xl font-bold flex items-center gap-2 min-w-0">
             <Users size={20} className="shrink-0" />
-            <span className="truncate">Gerenciamento de Equipe e PINs</span>
+            <span className="truncate">Gerenciamento de Equipe e senhas</span>
           </h1>
         </div>
-        <span className="text-xs bg-verde-normal px-3 py-1 rounded-full font-medium self-start sm:self-auto">Painel Admin</span>
+        <span className="text-xs bg-verde-normal px-3 py-1 rounded-full font-medium self-start sm:self-auto">Painel Administrador</span>
       </header>
 
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 space-y-6 sm:space-y-8">
@@ -108,7 +108,7 @@ export default function AdminUsersPage() {
               <label className="block text-xs font-semibold text-verde-escuro mb-1">Nome / Apelido</label>
               <input 
                 type="text"
-                placeholder="Ex: João da Cozinha"
+                placeholder="Ex: João atendente"
                 value={novoNome}
                 onChange={(e) => setNovoNome(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-cinza-borda text-sm focus:outline-none focus:border-verde-normal"
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
               <label className="block text-xs font-semibold text-verde-escuro mb-1">PIN de Acesso</label>
               <input 
                 type="password"
-                placeholder="••••"
+                placeholder="6 caracteres apenas!!"
                 maxLength={6}
                 value={novoPin}
                 onChange={(e) => setNovoPin(e.target.value)}

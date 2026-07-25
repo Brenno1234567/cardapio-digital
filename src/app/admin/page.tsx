@@ -26,6 +26,7 @@ export default function PainelAdmin() {
   const [categoria, setCategoria] = useState("Lanches");
   const [imagem, setImagem] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [fazendoUpload, setFazendoUpload] = useState(false); // CORRETO: No topo junto com os outros states
 
   const precoFormatado = (valor: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
@@ -69,11 +70,44 @@ export default function PainelAdmin() {
     setImagem("");
   };
 
+  // CORRETO: Função de upload fora de qualquer outra função
+  const handleUploadImagem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFazendoUpload(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setImagem(data.url);
+      } else {
+        alert("Erro ao fazer upload da imagem.");
+      }
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      alert("Erro de conexão ao enviar imagem.");
+    } finally {
+      setFazendoUpload(false);
+    }
+  };
+
   // Salvar (Cadastra novo ou Atualiza existente)
   async function salvarProduto(e: React.FormEvent) {
     e.preventDefault();
     if (!nome.trim() || !preco) {
       return alert("Preencha o nome e o preço do produto!");
+    }
+
+    if (fazendoUpload) {
+      return alert("Aguarde o envio da imagem terminar!");
     }
 
     setSalvando(true);
@@ -210,15 +244,24 @@ export default function PainelAdmin() {
               />
             </div>
 
+            {/* Input de Imagem */}
             <div>
-              <label className="block text-xs font-bold text-cinza-texto mb-1">URL da Imagem</label>
+              <label className="block text-xs font-bold text-cinza-texto mb-1">Imagem do Produto</label>
               <input
-                type="url"
-                value={imagem}
-                onChange={(e) => setImagem(e.target.value)}
-                placeholder="https://exemplo.com/foto.jpg"
-                className="w-full bg-fundo border border-cinza-borda rounded-xl p-3 text-sm focus:outline-none focus:border-verde-normal"
+                type="file"
+                accept="image/*"
+                onChange={handleUploadImagem}
+                disabled={fazendoUpload}
+                className="w-full bg-fundo border border-cinza-borda rounded-xl p-2.5 text-sm focus:outline-none focus:border-verde-normal file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-verde-claro file:text-verde-escuro hover:file:bg-verde-normal/20"
               />
+              {fazendoUpload && <p className="text-xs text-amber-500 mt-2 font-semibold animate-pulse">Enviando imagem...</p>}
+              
+              {/* Pré-visualização da imagem */}
+              {imagem && !fazendoUpload && (
+                <div className="mt-3 relative w-20 h-20 rounded-xl overflow-hidden border border-cinza-borda shadow-sm">
+                  <img src={imagem} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
             </div>
 
             <div>
@@ -234,7 +277,7 @@ export default function PainelAdmin() {
 
             <button
               type="submit"
-              disabled={salvando}
+              disabled={salvando || fazendoUpload}
               className={`w-full text-white py-3 rounded-xl font-bold text-sm shadow-md transition-colors disabled:opacity-50 ${
                 produtoEditandoId ? "bg-amber-500 hover:bg-amber-600" : "bg-verde-normal hover:bg-verde-destaque"
               }`}

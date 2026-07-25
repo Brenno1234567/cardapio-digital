@@ -116,12 +116,12 @@ export default function PainelPedidos() {
       <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 md:pb-8 min-w-0">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-verde-escuro">Live Orders</h1>
-            <p className="text-xs sm:text-sm text-cinza-texto">Real-time kitchen management</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-verde-escuro">Painel de pedidos</h1>
+            <p className="text-xs sm:text-sm text-cinza-texto">Gerenciamento dos pedidos, se o pedido foi concluido e efetuado o pagamento apague!! Aperte em finalizar!!</p>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
             <span className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-verde-normal border border-cinza-borda">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Ao vivo
             </span>
             <button
               onClick={carregarPedidos}
@@ -164,7 +164,7 @@ export default function PainelPedidos() {
 
                   {pedido.observacao && (
                     <p className="text-xs text-red-600 bg-red-50 p-2 rounded mb-3 border border-red-100 font-medium">
-                      ⚠️ Obs: {pedido.observacao}
+                      ⚠️Atenção! Obs: {pedido.observacao}
                     </p>
                   )}
 
