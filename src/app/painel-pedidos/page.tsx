@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Utensils, Users, Settings, LogOut, Pencil, CheckCircle, Clock } from "lucide-react";
+import { pusherClient } from "../../lib/pusher";
 
 interface ItemPedido {
   id: string;
@@ -44,14 +45,32 @@ export default function PainelPedidos() {
     }
   };
 
+  // 1. useEffect APENAS para carregar a tela pela primeira vez
   useEffect(() => {
     carregarPedidos();
-
-    const intervalo = setInterval(() => {
-      carregarPedidos();
-    }, 5000);
-    return () => clearInterval(intervalo);
   }, []);
+
+  // 2. useEffect do PUSHER (Fica DENTRO do componente, escutando em tempo real)
+  useEffect(() => {
+    // Inscreve no mesmo canal que a API está mandando o sinal
+    const channel = pusherClient.subscribe("canal-restaurante");
+
+    // Escuta evento de NOVO PEDIDO
+    channel.bind("novo-pedido", (data: any) => {
+      carregarPedidos(); 
+      console.log(data.mensagem); 
+    });
+
+    // Escuta evento de STATUS ATUALIZADO ("Preparando", "Saiu para Entrega")
+    channel.bind("status-atualizado", (data: any) => {
+      carregarPedidos(); 
+    });
+
+    // Limpeza: remove a inscrição quando o usuário sai da tela
+    return () => {
+      pusherClient.unsubscribe("canal-restaurante");
+    };
+  }, []); // Array vazio para rodar só quando abrir a tela
 
   async function atualizarStatus(id: string, novoStatus: string) {
     try {

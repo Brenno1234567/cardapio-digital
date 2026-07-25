@@ -3,6 +3,7 @@ import { db } from "../../../db";
 import { pedidos, itensPedido, produtos, configuracoes } from "../../../db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { requireKitchen, isNextResponse } from "../../../lib/auth";
+import { pusherServer } from "../../../lib/pusher-server";
 
 interface ItemPedidoInput {
   id?: string;
@@ -102,6 +103,7 @@ export async function POST(request: Request) {
     const pedidoId = crypto.randomUUID();
     const criadoEm = new Date();
 
+    // 1. Salva no banco de dados primeiro
     await db.transaction(async (tx) => {
       await tx.insert(pedidos).values({
         id: pedidoId,
@@ -127,6 +129,15 @@ export async function POST(request: Request) {
       await tx.insert(itensPedido).values(itensParaSalvar);
     });
 
+    // 2. Dispara o sinal do Pusher após salvar no banco
+    try {
+      await pusherServer.trigger("canal-restaurante", "novo-pedido", {
+        mensagem: "Você tem um novo pedido!",
+      });
+    } catch (pusherError) {
+      console.error("Erro ao enviar sinal via Pusher (Novo Pedido):", pusherError);
+    }
+
     return NextResponse.json(
       { success: true, pedidoId, total: totalCalculado, message: "Pedido criado com sucesso!" },
       { status: 201 }
@@ -150,18 +161,30 @@ export async function PATCH(request: Request) {
 
     const { id, status } = body;
     const statusValidos = ["pendente", "preparando", "pronto", "entregue", "cancelado"];
+    const statusFormatado = String(status).toLowerCase();
 
-    if (!statusValidos.includes(String(status).toLowerCase())) {
+    if (!statusValidos.includes(statusFormatado)) {
       return NextResponse.json(
         { error: `Status inválido. Use: ${statusValidos.join(", ")}` },
         { status: 400 }
       );
     }
 
+    // 1. Atualiza no banco de dados
     await db
       .update(pedidos)
-      .set({ status: String(status).toLowerCase() })
+      .set({ status: statusFormatado })
       .where(eq(pedidos.id, String(id)));
+
+    // 2. Dispara o sinal do Pusher avisando a atualização de status
+    try {
+      await pusherServer.trigger("canal-restaurante", "status-atualizado", {
+        id: String(id),
+        status: statusFormatado,
+      });
+    } catch (pusherError) {
+      console.error("Erro ao enviar sinal via Pusher (Status Atualizado):", pusherError);
+    }
 
     return NextResponse.json({ success: true, message: "Status atualizado!" });
   } catch (error) {
