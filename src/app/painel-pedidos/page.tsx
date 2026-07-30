@@ -145,9 +145,6 @@ export default function PainelPedidos() {
             <Link href="/historico-pedidos" className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg text-verde-escuro border border-cinza-borda text-sm font-bold hover:bg-verde-claro/30 transition-colors">
               <History size={17} /> <span className="hidden sm:inline">Historico</span>
             </Link>
-            <span className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-verde-normal border border-cinza-borda">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Ao vivo
-            </span>
             <button
               onClick={carregarPedidos}
               className="flex-1 sm:flex-none bg-verde-normal text-white px-4 py-2 rounded-lg font-bold text-sm shadow hover:bg-verde-destaque transition-colors cursor-pointer"

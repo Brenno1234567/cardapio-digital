@@ -30,6 +30,9 @@ export default function PainelAdmin() {
 
   const precoFormatado = (valor: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
+  const categoriasDisponiveis = Array.from(
+    new Set(["Lanches", "Bebidas", "Acompanhamentos", "Sobremesas", ...produtos.map((produto) => produto.categoria).filter(Boolean)])
+  ).sort();
 
   const carregarProdutos = async () => {
     try {
@@ -173,7 +176,7 @@ export default function PainelAdmin() {
             <ArrowLeft size={20} className="text-verde-escuro" />
           </button>
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-verde-escuro truncate">Painel Administrativo</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-verde-escuro truncate">Cardápio</h1>
             <p className="text-xs sm:text-sm text-cinza-texto">Gerencie os itens do seu cardápio em tempo real</p>
           </div>
         </div>
@@ -219,16 +222,17 @@ export default function PainelAdmin() {
 
             <div>
               <label className="block text-xs font-bold text-cinza-texto mb-1">Categoria</label>
-              <select
+              <input
+                type="text"
                 value={categoria}
                 onChange={(e) => setCategoria(e.target.value)}
+                list="categorias-disponiveis"
+                placeholder="Digite ou escolha uma categoria"
                 className="w-full bg-fundo border border-cinza-borda rounded-xl p-3 text-sm focus:outline-none focus:border-verde-normal"
-              >
-                <option value="Lanches">Lanches</option>
-                <option value="Bebidas">Bebidas</option>
-                <option value="Acompanhamentos">Acompanhamentos</option>
-                <option value="Sobremesas">Sobremesas</option>
-              </select>
+              />
+              <datalist id="categorias-disponiveis">
+                {categoriasDisponiveis.map((categoriaDisponivel) => <option key={categoriaDisponivel} value={categoriaDisponivel} />)}
+              </datalist>
             </div>
 
             <div>

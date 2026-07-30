@@ -71,7 +71,10 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
   const normalizarTexto = (texto: string) =>
     texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-  const categorias = ["Todos", "Lanches", "Bebidas", "Acompanhamentos", "Sobremesas"];
+  const categorias = [
+    "Todos",
+    ...Array.from(new Set(produtos.map((produto) => produto.categoria?.trim()).filter(Boolean))).sort(),
+  ];
 
   const produtosFiltrados = produtos.filter((p) => {
     if (isPesquisando && termoPesquisa.trim() !== "") {

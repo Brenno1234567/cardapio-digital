@@ -96,7 +96,6 @@ export default function AdminUsersPage() {
             <span className="truncate">Gerenciamento de Equipe e senhas</span>
           </h1>
         </div>
-        <span className="text-xs bg-verde-normal px-3 py-1 rounded-full font-medium self-start sm:self-auto">Painel Administrador</span>
       </header>
 
       <main className="flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 space-y-6 sm:space-y-8">

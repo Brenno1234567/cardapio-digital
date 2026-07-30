@@ -39,7 +39,6 @@ export default function AdminSettingsPage() {
     <div className="min-h-screen bg-fundo flex flex-col">
       <header className="bg-verde-escuro text-white p-4 md:px-8 flex items-center justify-between gap-3 shadow-md">
         <div className="flex items-center gap-3"><Link href="/painel-pedidos" className="p-2 bg-white/10 rounded-xl"><ArrowLeft size={20} /></Link><h1 className="text-base sm:text-xl font-bold flex items-center gap-2"><Settings size={20} /> Configurações</h1></div>
-        <span className="text-xs bg-verde-normal px-3 py-1 rounded-full font-medium">Painel Admin</span>
       </header>
 
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8">
