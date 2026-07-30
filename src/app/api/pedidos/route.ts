@@ -96,7 +96,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "O valor total do pedido deve ser maior que zero." }, { status: 400 });
     }
 
-    const mesaFormatada = String(mesa || "Mesa 01").trim().substring(0, 50);
+    const mesaRecebida = String(mesa || "").trim();
+    const numeroMesa = /^Mesa\s+(\d{1,3})$/i.exec(mesaRecebida);
+    const ehBalcao = mesaRecebida.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "balcao";
+
+    if (!numeroMesa && !ehBalcao) {
+      return NextResponse.json({ error: "Abra o cardápio pelo QR Code de uma mesa." }, { status: 400 });
+    }
+
+    const mesaFormatada = numeroMesa ? `Mesa ${numeroMesa[1]}` : "Balcão";
     const clienteFormatado = String(cliente || "Cliente Balcão").trim().substring(0, 100);
     const obsFormatada = String(observacao || "").trim().substring(0, 255);
 

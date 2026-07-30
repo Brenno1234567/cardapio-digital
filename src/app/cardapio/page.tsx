@@ -2,7 +2,6 @@
 
 import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Menu, Search, ShoppingCart, Receipt, Home, X, Store } from "lucide-react";
 import CardProduto from "../../components/CardProduto";
 import { useCartStore } from "../../contexts/cartStore";
@@ -22,8 +21,7 @@ interface Configuracoes {
   tempoPreparo: string;
 }
 
-function CardapioCliente() {
-  const searchParams = useSearchParams();
+export function CardapioCliente({ mesa }: { mesa?: string }) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [config, setConfig] = useState<Configuracoes | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -35,7 +33,8 @@ function CardapioCliente() {
 
   const itensCarrinho = useCartStore((state) => state.itens);
   const quantidadeTotal = itensCarrinho.reduce((acc, item) => acc + item.quantidade, 0);
-  const mesaParam = searchParams.get("mesa");
+  const mesaParam = mesa;
+  const mesaValida = Boolean(mesaParam && /^Mesa\s+\d+$/i.test(mesaParam));
 
   useEffect(() => {
     if (quantidadeTotal > 0) {
@@ -95,9 +94,22 @@ function CardapioCliente() {
 
   const nomeRestaurante = config?.nomeRestaurante ?? "Lumiere Dining";
   const lojaAberta = config?.statusLoja ?? true;
+  const numeroMesa = mesaParam?.match(/^Mesa\s+(\d+)$/i)?.[1];
+  const cardapioHref = numeroMesa ? `/cardapio/mesa-${numeroMesa}?ativo=1` : "/cardapio";
   const carrinhoHref = mesaParam
     ? `/carrinho?mesa=${encodeURIComponent(mesaParam)}`
     : "/carrinho";
+
+  if (!mesaValida) {
+    return (
+      <main className="min-h-screen bg-fundo flex items-center justify-center p-6 text-center">
+        <div className="max-w-md bg-white border border-cinza-borda rounded-2xl shadow-sm p-8">
+          <h1 className="text-2xl font-extrabold text-verde-escuro mb-3">Acesse pelo QR Code da mesa</h1>
+          <p className="text-cinza-texto">Escaneie o QR Code disponível na sua mesa para abrir o cardápio e fazer seu pedido.</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-fundo flex flex-col relative pb-24 md:pb-0">
@@ -121,7 +133,7 @@ function CardapioCliente() {
                   </button>
                 </div>
                 <nav className="flex flex-col gap-1.5">
-                  <Link href="/cardapio" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">
+                  <Link href={cardapioHref} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">
                     <Home size={18} /> Cardápio
                   </Link>
                   <button onClick={() => { setIsMenuOpen(false); alternarPesquisa(); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium w-full text-left">
@@ -239,7 +251,7 @@ function CardapioCliente() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 w-full bg-white border-t border-cinza-borda/60 flex justify-around items-center p-3 safe-bottom z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-        <Link href="/cardapio" className="flex flex-col items-center text-verde-normal">
+        <Link href={cardapioHref} className="flex flex-col items-center text-verde-normal">
           <div className="bg-verde-normal text-white p-2 rounded-full mb-1 shadow">
             <Home size={18} />
           </div>
