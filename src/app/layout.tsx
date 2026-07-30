@@ -27,16 +27,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden">
-        <header className="h-16 bg-white border-b border-cinza-borda/50 flex items-center justify-center shrink-0">
-          <img
-            src="/logo-erva-doce.png"
-            alt="Erva Doce AscanI Panificadora"
-            className="h-14 w-14 object-contain"
-          />
-        </header>
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col overflow-x-hidden">{children}</body>
     </html>
   );
 }

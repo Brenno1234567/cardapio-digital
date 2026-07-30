@@ -155,6 +155,12 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
             )}
           </div>
 
+          <img
+            src="/logo-erva-doce-transparent.png"
+            alt="Erva Doce AscanI Panificadora"
+            className="h-12 w-16 object-contain shrink-0"
+          />
+
           <h1 className="flex-1 min-w-0 text-center text-lg sm:text-xl md:text-2xl font-extrabold text-verde-destaque tracking-tight truncate px-1">
             {nomeRestaurante}
           </h1>
