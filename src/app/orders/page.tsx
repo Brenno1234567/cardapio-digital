@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Clock, CheckCircle, ChefHat, ShoppingBag, XCircle } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle, ChefHat, ShoppingBag, XCircle, Trash2 } from "lucide-react";
 
 interface Pedido {
   id: string;
@@ -55,6 +55,13 @@ export default function TelaOrders() {
   }, []);
 
   const cancelarPedido = async (id: string) => { if (!window.confirm("Cancelar este pedido?")) return; const r = await fetch("/api/pedidos/cancelar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); const d = await r.json(); if (!r.ok) return alert(d.error || "Não foi possível cancelar."); setMeusPedidos((pedidos) => pedidos.map((pedido) => pedido.id === id ? { ...pedido, status: "cancelado" } : pedido)); };
+
+  const excluirDaLista = (id: string) => {
+    if (!window.confirm("Remover este pedido da sua lista?")) return;
+    const salvos = JSON.parse(localStorage.getItem("meusPedidos") || "[]").filter((pedido: { id: string }) => pedido.id !== id);
+    localStorage.setItem("meusPedidos", JSON.stringify(salvos));
+    setMeusPedidos((pedidos) => pedidos.filter((pedido) => pedido.id !== id));
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -134,6 +141,7 @@ export default function TelaOrders() {
                 <span className="text-cinza-texto">Total: <strong className="text-verde-escuro">{precoFormatado(pedido.total)}</strong></span>
                 <span className="text-xs text-cinza-texto shrink-0">Feito às {horaFormatada(pedido.criadoEm)}</span>
                 {pedido.status === "pendente" && <button onClick={() => cancelarPedido(pedido.id)} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 text-red-600 font-bold text-sm hover:bg-red-50"><XCircle size={16} /> Cancelar pedido</button>}
+                <button onClick={() => excluirDaLista(pedido.id)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-cinza-texto font-bold text-sm hover:bg-gray-100"><Trash2 size={16} /> Excluir da lista</button>
               </div>
             </div>
           ))}
