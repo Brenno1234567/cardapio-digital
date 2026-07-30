@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Clock, CheckCircle, ChefHat, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle, ChefHat, ShoppingBag, XCircle } from "lucide-react";
 
 interface Pedido {
   id: string;
@@ -54,6 +54,8 @@ export default function TelaOrders() {
     return () => clearInterval(intervalo);
   }, []);
 
+  const cancelarPedido = async (id: string) => { if (!window.confirm("Cancelar este pedido?")) return; const r = await fetch("/api/pedidos/cancelar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); const d = await r.json(); if (!r.ok) return alert(d.error || "Não foi possível cancelar."); setMeusPedidos((pedidos) => pedidos.map((pedido) => pedido.id === id ? { ...pedido, status: "cancelado" } : pedido)); };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pendente":
@@ -74,6 +76,7 @@ export default function TelaOrders() {
             <CheckCircle size={14} /> Pronto para Entrega!
           </span>
         );
+      case "cancelado": return <span className="flex items-center gap-1 text-red-600 bg-red-50 px-3 py-1 rounded-full text-xs font-bold border border-red-200"><XCircle size={14} /> Cancelado</span>;
       case "finalizado":
         return (
           <span className="flex items-center gap-1 text-gray-500 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">
@@ -130,6 +133,7 @@ export default function TelaOrders() {
               <div className="border-t border-cinza-borda/30 pt-3 flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center text-sm">
                 <span className="text-cinza-texto">Total: <strong className="text-verde-escuro">{precoFormatado(pedido.total)}</strong></span>
                 <span className="text-xs text-cinza-texto shrink-0">Feito às {horaFormatada(pedido.criadoEm)}</span>
+                {pedido.status === "pendente" && <button onClick={() => cancelarPedido(pedido.id)} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 text-red-600 font-bold text-sm hover:bg-red-50"><XCircle size={16} /> Cancelar pedido</button>}
               </div>
             </div>
           ))}
