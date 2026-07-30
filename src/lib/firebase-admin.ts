@@ -4,11 +4,22 @@ import { getAuth } from "firebase-admin/auth";
 function getFirebaseAdminApp() {
   if (getApps().length > 0) return getApps()[0];
 
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  let serviceAccount: Record<string, string> | null = null;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+    try {
+      serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    } catch {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON invÃ¡lido.");
+    }
+  }
 
-  const credential = projectId && clientEmail && privateKey
+  const projectId = serviceAccount?.project_id ?? process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = serviceAccount?.client_email ?? process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = serviceAccount?.private_key ?? process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+
+  const credential = serviceAccount
+    ? cert(serviceAccount)
+    : projectId && clientEmail && privateKey
     ? cert({ projectId, clientEmail, privateKey })
     : process.env.GOOGLE_APPLICATION_CREDENTIALS
       ? applicationDefault()
