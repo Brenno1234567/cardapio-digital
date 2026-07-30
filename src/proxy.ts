@@ -33,7 +33,7 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/painel-pedidos")) {
+  if (pathname.startsWith("/painel-pedidos") || pathname.startsWith("/historico-pedidos")) {
     if (!isAdmin && !isKitchen) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -62,6 +62,7 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/painel-pedidos/:path*",
+    "/historico-pedidos/:path*",
     "/cozinha/:path*",
     "/users/:path*",
     "/settings/:path*",

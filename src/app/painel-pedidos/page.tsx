@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Utensils, Users, Settings, LogOut, Pencil, CheckCircle, Clock } from "lucide-react";
+import { Utensils, Users, Settings, LogOut, Pencil, CheckCircle, Clock, History } from "lucide-react";
 import { pusherClient } from "../../lib/pusher";
 
 interface ItemPedido {
@@ -142,6 +142,9 @@ export default function PainelPedidos() {
             <p className="text-xs sm:text-sm text-cinza-texto">Gerenciamento dos pedidos, se o pedido foi concluido e efetuado o pagamento apague!! Aperte em finalizar!!</p>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
+            <Link href="/historico-pedidos" className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg text-verde-escuro border border-cinza-borda text-sm font-bold hover:bg-verde-claro/30 transition-colors">
+              <History size={17} /> <span className="hidden sm:inline">Historico</span>
+            </Link>
             <span className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-verde-normal border border-cinza-borda">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Ao vivo
             </span>

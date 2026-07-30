@@ -192,3 +192,20 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Erro interno ao atualizar status." }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  const auth = await requireKitchen();
+  if (isNextResponse(auth)) return auth;
+  const body = await request.json().catch(() => null);
+  const id = typeof body?.id === "string" ? body.id : "";
+  if (!id) return NextResponse.json({ error: "ID do pedido obrigatorio." }, { status: 400 });
+  try {
+    await db.transaction(async (tx) => {
+      await tx.delete(itensPedido).where(eq(itensPedido.pedidoId, id));
+      await tx.delete(pedidos).where(eq(pedidos.id, id));
+    });
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Erro ao excluir pedido." }, { status: 500 });
+  }
+}

@@ -106,7 +106,7 @@ function CardapioCliente() {
           <div className="relative shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2.5 bg-verde-normal text-white rounded-xl shadow-md hover:bg-verde-destaque transition-all flex items-center justify-center"
+              className="hidden md:flex p-2.5 bg-verde-normal text-white rounded-xl shadow-md hover:bg-verde-destaque transition-all items-center justify-center"
               aria-label="Menu"
             >
               {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -142,7 +142,7 @@ function CardapioCliente() {
             {nomeRestaurante}
           </h1>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="hidden md:flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={alternarPesquisa}
               className={`p-2.5 border rounded-xl transition-colors shadow-sm ${isPesquisando ? "bg-verde-escuro text-white border-verde-escuro" : "bg-white border-cinza-borda text-verde-escuro hover:bg-gray-50"}`}

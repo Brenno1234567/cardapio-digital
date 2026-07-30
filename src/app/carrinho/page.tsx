@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, ArrowLeft, ShoppingCart } from "lucide-react";
+import { Minus, Plus, ArrowLeft, ShoppingCart } from "lucide-react";
 import { useCartStore } from "../../contexts/cartStore";
 
 export default function TelaCarrinho() {
   const router = useRouter();
-  const { itens, removerItem, limparCarrinho } = useCartStore();
+  const { itens, alterarQuantidade, limparCarrinho } = useCartStore();
 
   const [mesa, setMesa] = useState("Mesa 01");
   const [cliente, setCliente] = useState("");
@@ -94,10 +94,11 @@ async function finalizarPedido() {
                   <p className="text-xs text-cinza-texto">Qtd: {item.quantidade}x • {precoFormatado(item.preco)}</p>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                  <span className="font-bold text-verde-normal">{precoFormatado(item.preco * item.quantidade)}</span>
-                  <button onClick={() => removerItem(item.id)} className="text-red-500 hover:text-red-700 p-1">
-                    <Trash2 size={18} />
-                  </button>
+                  <span className="font-bold text-verde-normal">{precoFormatado(item.preco * item.quantidade)}</span>                  <div className="flex items-center border border-cinza-borda rounded-lg overflow-hidden">
+                    <button onClick={() => alterarQuantidade(item.id, item.quantidade - 1)} className="p-2 text-verde-escuro hover:bg-verde-claro/40"><Minus size={16} /></button>
+                    <span className="min-w-8 text-center text-sm font-bold text-verde-escuro">{item.quantidade}</span>
+                    <button onClick={() => alterarQuantidade(item.id, item.quantidade + 1)} className="p-2 text-verde-escuro hover:bg-verde-claro/40"><Plus size={16} /></button>
+                  </div>
                 </div>
               </div>
             ))}
