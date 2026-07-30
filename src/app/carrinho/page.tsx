@@ -1,11 +1,11 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Minus, Plus, ArrowLeft, ShoppingCart } from "lucide-react";
 import { useCartStore } from "../../contexts/cartStore";
 
-export default function TelaCarrinho() {
+function ConteudoCarrinho() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { itens, alterarQuantidade, limparCarrinho } = useCartStore();
@@ -85,5 +85,13 @@ export default function TelaCarrinho() {
         </>
       )}
     </div>
+  );
+}
+
+export default function TelaCarrinho() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-fundo flex items-center justify-center text-verde-escuro">Carregando carrinho...</main>}>
+      <ConteudoCarrinho />
+    </Suspense>
   );
 }
