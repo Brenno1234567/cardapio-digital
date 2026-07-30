@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { firebaseAuth } from "../../../../lib/firebase-admin";
 import { setAuthCookies } from "../../../../lib/auth";
 
+export const runtime = "nodejs";
+
 function allowedAdminEmails() {
   return new Set(
     (process.env.GOOGLE_ADMIN_EMAILS ?? "")
