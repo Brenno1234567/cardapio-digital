@@ -8,7 +8,7 @@ async function seed() {
     .insert(configuracoes)
     .values({
       id: "config-principal",
-      nomeRestaurante: "Lumiere Dining",
+      nomeRestaurante: "",
       statusLoja: true,
       tempoPreparo: "30-45",
     })

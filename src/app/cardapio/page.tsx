@@ -16,7 +16,6 @@ interface Produto {
 }
 
 interface Configuracoes {
-  nomeRestaurante: string;
   statusLoja: boolean;
   tempoPreparo: string;
 }
@@ -97,7 +96,6 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
     }
   };
 
-  const nomeRestaurante = config?.nomeRestaurante ?? "Lumiere Dining";
   const lojaAberta = config?.statusLoja ?? true;
   const numeroMesa = mesaParam?.match(/^Mesa\s+(\d+)$/i)?.[1];
   const cardapioHref = numeroMesa ? `/cardapio/mesa-${numeroMesa}?ativo=1` : "/cardapio";
@@ -131,12 +129,6 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
 
             {isMenuOpen && (
               <div className="absolute left-0 mt-3 w-64 bg-verde-escuro text-white rounded-2xl shadow-2xl p-4 z-50 border border-verde-normal/40">
-                <div className="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
-                  <span className="font-bold text-sm tracking-wider uppercase text-verde-claro">{nomeRestaurante}</span>
-                  <button onClick={() => setIsMenuOpen(false)} className="text-white/70 hover:text-white">
-                    <X size={18} />
-                  </button>
-                </div>
                 <nav className="flex flex-col gap-1.5">
                   <Link href={cardapioHref} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium">
                     <Home size={18} /> Cardápio
@@ -161,9 +153,7 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
             className="h-12 w-16 object-contain shrink-0"
           />
 
-          <h1 className="flex-1 min-w-0 text-center text-lg sm:text-xl md:text-2xl font-extrabold text-verde-destaque tracking-tight truncate px-1">
-            {nomeRestaurante}
-          </h1>
+          <div className="flex-1" aria-hidden="true" />
 
           <div className="hidden md:flex items-center gap-2 sm:gap-3 shrink-0">
             <button
