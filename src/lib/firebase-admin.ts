@@ -1,4 +1,4 @@
-import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
 function getFirebaseAdminApp() {
@@ -8,11 +8,17 @@ function getFirebaseAdminApp() {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
-  if (!projectId || !clientEmail || !privateKey) {
+  const credential = projectId && clientEmail && privateKey
+    ? cert({ projectId, clientEmail, privateKey })
+    : process.env.GOOGLE_APPLICATION_CREDENTIALS
+      ? applicationDefault()
+      : null;
+
+  if (!credential) {
     throw new Error("Firebase Admin ainda nÃ£o configurado.");
   }
 
-  return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  return initializeApp({ credential, ...(projectId ? { projectId } : {}) });
 }
 
 export function firebaseAuth() {
