@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, Lock } from "lucide-react";
+import { signInWithGoogle } from "../../lib/firebase-client";
 
 function LoginForm() {
   const [pin, setPin] = useState("");
@@ -53,6 +54,35 @@ function LoginForm() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setErro("");
+    setCarregando(true);
+
+    try {
+      const idToken = await signInWithGoogle();
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErro(data.error || "Esta conta Google nÃ£o tem acesso.");
+        return;
+      }
+
+      localStorage.setItem("lumiere_user", JSON.stringify({ nome: data.nome, cargo: data.cargo }));
+      const redirect = searchParams.get("redirect");
+      router.push(redirect?.startsWith("/") ? redirect : "/admin");
+    } catch (err) {
+      console.error("Erro no login Google:", err);
+      setErro(err instanceof Error ? err.message : "NÃ£o foi possÃ­vel entrar com Google.");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-fundo flex items-center justify-center p-4">
       <div className="bg-white p-6 sm:p-8 rounded-2xl border border-cinza-borda shadow-md max-w-md w-full">
@@ -98,6 +128,21 @@ function LoginForm() {
             {carregando ? "Entrando..." : "Entrar no Sistema"}
           </button>
         </form>
+
+        <div className="flex items-center gap-3 my-5 text-xs text-cinza-texto">
+          <div className="h-px flex-1 bg-cinza-borda" />
+          ou
+          <div className="h-px flex-1 bg-cinza-borda" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={carregando}
+          className="w-full border border-cinza-borda hover:bg-gray-50 text-verde-escuro font-bold py-3 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+        >
+          Entrar com Google
+        </button>
       </div>
     </div>
   );
