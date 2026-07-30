@@ -43,7 +43,7 @@ function LoginForm() {
       } else if (data.cargo === "admin") {
         router.push("/cozinha");
       } else {
-        router.push("/atendimento");
+        router.push("/cardapio");
       }
     } catch (err) {
       console.error("Erro de conexão:", err);

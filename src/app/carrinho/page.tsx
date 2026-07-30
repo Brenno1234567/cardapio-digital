@@ -1,17 +1,15 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2, ArrowLeft, ShoppingCart } from "lucide-react";
 import { useCartStore } from "../../contexts/cartStore";
 
-function TelaCarrinho() {
+export default function TelaCarrinho() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { itens, removerItem, limparCarrinho } = useCartStore();
 
-  const mesaQr = searchParams.get("mesa")?.trim();
-  const [mesa, setMesa] = useState(() => mesaQr ? `Mesa ${mesaQr}` : "Mesa 01");
+  const [mesa, setMesa] = useState("Mesa 01");
   const [cliente, setCliente] = useState("");
   const [observacao, setObservacao] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -38,7 +36,7 @@ async function finalizarPedido() {
           cliente,
           observacao,
           total,
-          itens: itens.map((i) => ({ id: i.id, nome: i.nome, quantidade: i.quantidade })),
+          itens: itens.map((i) => ({ nome: i.nome, quantidade: i.quantidade, preco: i.preco })),
         }),
       });
 
@@ -68,7 +66,7 @@ async function finalizarPedido() {
     <div className="min-h-screen bg-fundo p-4 pb-36 max-w-2xl mx-auto w-full min-w-0">
       {/* Topo */}
       <div className="flex items-center gap-3 sm:gap-4 mb-6 min-w-0">
-        <button onClick={() => router.push(mesaQr ? `/cardapio?mesa=${encodeURIComponent(mesaQr)}` : "/cardapio")} className="bg-white p-2 rounded-xl border border-cinza-borda shadow-sm shrink-0">
+        <button onClick={() => router.push("/cardapio")} className="bg-white p-2 rounded-xl border border-cinza-borda shadow-sm shrink-0">
           <ArrowLeft size={20} className="text-verde-escuro" />
         </button>
         <h1 className="text-lg sm:text-xl font-bold text-verde-escuro truncate">Seu Carrinho</h1>
@@ -79,7 +77,7 @@ async function finalizarPedido() {
           <ShoppingCart size={48} className="mx-auto text-cinza-texto mb-3 opacity-40" />
           <p className="text-cinza-texto font-medium">Seu carrinho está vazio.</p>
           <button 
-            onClick={() => router.push(mesaQr ? `/cardapio?mesa=${encodeURIComponent(mesaQr)}` : "/cardapio")}
+            onClick={() => router.push("/cardapio")}
             className="mt-4 bg-verde-normal text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md"
           >
             Ver Cardápio
@@ -127,9 +125,6 @@ async function finalizarPedido() {
                 onChange={(e) => setMesa(e.target.value)}
                 className="w-full bg-fundo p-3 rounded-xl border border-cinza-borda text-sm focus:outline-none focus:ring-2 focus:ring-verde-normal"
               >
-                {mesaQr && !["01", "02", "05", "14"].includes(mesaQr) && (
-                  <option value={`Mesa ${mesaQr}`}>Mesa {mesaQr}</option>
-                )}
                 <option value="Mesa 01">Mesa 01</option>
                 <option value="Mesa 02">Mesa 02</option>
                 <option value="Mesa 05">Mesa 05</option>
@@ -167,13 +162,5 @@ async function finalizarPedido() {
         </>
       )}
     </div>
-  );
-}
-
-export default function CarrinhoPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-fundo flex items-center justify-center text-verde-escuro">Carregando carrinho...</div>}>
-      <TelaCarrinho />
-    </Suspense>
   );
 }

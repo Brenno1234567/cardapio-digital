@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import { isNextResponse, requireAdmin } from "../../../lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,9 +8,6 @@ cloudinary.config({
 });
 
 export async function POST(request: Request) {
-  const auth = await requireAdmin();
-  if (isNextResponse(auth)) return auth;
-
   try {
     const data = await request.formData();
     const file: File | null = data.get("file") as unknown as File;

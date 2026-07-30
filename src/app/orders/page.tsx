@@ -33,11 +33,10 @@ export default function TelaOrders() {
         return;
       }
 
-      const ids = idsSalvos.map((p) => p.id).filter(Boolean);
-      const res = await fetch(`/api/pedidos?ids=${encodeURIComponent(ids.join(","))}`);
-      if (!res.ok) throw new Error("Não foi possível buscar pedidos.");
+      const res = await fetch("/api/pedidos");
       const todosPedidos: Pedido[] = await res.json();
 
+      const ids = idsSalvos.map((p) => p.id);
       const filtrados = todosPedidos.filter((p) => ids.includes(p.id));
 
       setMeusPedidos(filtrados);
@@ -75,7 +74,7 @@ export default function TelaOrders() {
             <CheckCircle size={14} /> Pronto para Entrega!
           </span>
         );
-      case "entregue":
+      case "finalizado":
         return (
           <span className="flex items-center gap-1 text-gray-500 bg-gray-100 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">
             <CheckCircle size={14} /> Entregue
