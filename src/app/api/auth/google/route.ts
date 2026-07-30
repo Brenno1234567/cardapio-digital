@@ -41,12 +41,12 @@ export async function POST(request: Request) {
     const account = accountData.users?.[0] as FirebaseAccount | undefined;
     const email = account?.email?.toLowerCase();
 
-    if (!response.ok || !email || !account.emailVerified || !allowedAdminEmails().has(email)) {
+    if (!response.ok || !email || !account?.emailVerified || !allowedAdminEmails().has(email)) {
       return NextResponse.json({ error: "Esta conta Google nÃ£o tem acesso." }, { status: 403 });
     }
 
     await setAuthCookies("admin");
-    return NextResponse.json({ success: true, cargo: "admin", nome: account.displayName ?? email });
+    return NextResponse.json({ success: true, cargo: "admin", nome: account?.displayName ?? email });
   } catch (error) {
     console.error("Erro no login Google:", error);
     return NextResponse.json({ error: "NÃ£o foi possÃ­vel validar login Google." }, { status: 401 });
