@@ -31,7 +31,7 @@ export default function PainelAdmin() {
   const precoFormatado = (valor: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
   const categoriasDisponiveis = Array.from(
-    new Set(["Lanches", "Bebidas", "Acompanhamentos", "Sobremesas", ...produtos.map((produto) => produto.categoria).filter(Boolean)])
+    new Set(produtos.map((produto) => produto.categoria.trim()).filter(Boolean))
   ).sort();
 
   const carregarProdutos = async () => {
@@ -167,6 +167,21 @@ export default function PainelAdmin() {
     }
   }
 
+  async function editarCategoria(categoriaAtual: string) {
+    const novaCategoria = window.prompt("Novo nome da categoria:", categoriaAtual)?.trim();
+    if (!novaCategoria || novaCategoria === categoriaAtual) return;
+
+    const res = await fetch("/api/categorias", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ categoriaAtual, novaCategoria }),
+    });
+
+    if (!res.ok) return alert("Não foi possível editar a categoria.");
+    if (categoria === categoriaAtual) setCategoria(novaCategoria);
+    carregarProdutos();
+  }
+
   return (
     <div className="min-h-screen bg-fundo p-4 sm:p-6 md:p-10">
       {/* Topo */}
@@ -289,6 +304,18 @@ export default function PainelAdmin() {
               {salvando ? "Salvando..." : produtoEditandoId ? "Salvar Alterações" : "Cadastrar Produto"}
             </button>
           </form>
+
+          <div className="mt-6 pt-5 border-t border-cinza-borda/60">
+            <h3 className="text-sm font-bold text-verde-escuro mb-2">Categorias do cardápio</h3>
+            <p className="text-xs text-cinza-texto mb-3">Clique em uma categoria para renomeá-la em todos os produtos.</p>
+            <div className="flex flex-wrap gap-2">
+              {categoriasDisponiveis.map((categoriaDisponivel) => (
+                <button key={categoriaDisponivel} type="button" onClick={() => editarCategoria(categoriaDisponivel)} className="px-3 py-1.5 rounded-full border border-cinza-borda bg-fundo text-verde-escuro text-xs font-bold hover:border-verde-normal hover:text-verde-normal transition-colors">
+                  <Edit3 size={13} className="inline mr-1" />{categoriaDisponivel}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Lista de Produtos Cadastrados */}
