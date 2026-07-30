@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, CheckCircle, ChefHat, ShoppingBag, XCircle, Trash2 } from "lucide-react";
+import { useCartStore } from "../../contexts/cartStore";
 
 interface Pedido {
   id: string;
@@ -16,6 +17,7 @@ interface Pedido {
 
 export default function TelaOrders() {
   const router = useRouter();
+  const mesa = useCartStore((state) => state.mesa);
   const [meusPedidos, setMeusPedidos] = useState<Pedido[]>([]);
   const [carregando, setCarregando] = useState(true);
 
@@ -24,6 +26,9 @@ export default function TelaOrders() {
 
   const horaFormatada = (data: string) =>
     new Date(data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+  const numeroMesa = mesa?.match(/^Mesa\s+(\d+)$/i)?.[1];
+  const cardapioHref = numeroMesa ? `/cardapio/mesa-${numeroMesa}?ativo=1` : "/cardapio";
 
   const buscarMeusPedidos = async () => {
     try {
@@ -99,7 +104,7 @@ export default function TelaOrders() {
     <div className="min-h-screen bg-fundo p-4 pb-32 max-w-2xl mx-auto w-full min-w-0">
       {/* Topo */}
       <div className="flex items-center gap-3 sm:gap-4 mb-6 min-w-0">
-        <button onClick={() => router.push("/cardapio")} className="bg-white p-2 rounded-xl border border-cinza-borda shadow-sm shrink-0">
+        <button onClick={() => router.push(cardapioHref)} className="bg-white p-2 rounded-xl border border-cinza-borda shadow-sm shrink-0">
           <ArrowLeft size={20} className="text-verde-escuro" />
         </button>
         <h1 className="text-lg sm:text-xl font-bold text-verde-escuro truncate">Acompanhar Pedidos</h1>
@@ -112,7 +117,7 @@ export default function TelaOrders() {
           <ShoppingBag size={48} className="mx-auto text-cinza-texto mb-3 opacity-40" />
           <p className="text-cinza-texto font-medium">Você ainda não fez nenhum pedido recente.</p>
           <button 
-            onClick={() => router.push("/cardapio")}
+            onClick={() => router.push(cardapioHref)}
             className="mt-4 bg-verde-normal text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md"
           >
             Ver Cardápio

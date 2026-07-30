@@ -10,16 +10,19 @@ export interface ItemCarrinho {
 
 interface CartState {
   itens: ItemCarrinho[];
+  mesa: string | null;
   adicionarItem: (produto: { id: string; nome: string; preco: number }) => void;
   removerItem: (id: string) => void;
   alterarQuantidade: (id: string, quantidade: number) => void;
   limparCarrinho: () => void;
+  definirMesa: (mesa: string) => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       itens: [],
+      mesa: null,
 
       adicionarItem: (produto) =>
         set((state) => {
@@ -58,6 +61,7 @@ export const useCartStore = create<CartState>()(
         }),
 
       limparCarrinho: () => set({ itens: [] }),
+      definirMesa: (mesa) => set({ mesa }),
     }),
     { name: "lumiere-cart" }
   )

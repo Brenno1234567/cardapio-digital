@@ -32,9 +32,14 @@ export function CardapioCliente({ mesa }: { mesa?: string }) {
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
   const itensCarrinho = useCartStore((state) => state.itens);
+  const definirMesa = useCartStore((state) => state.definirMesa);
   const quantidadeTotal = itensCarrinho.reduce((acc, item) => acc + item.quantidade, 0);
   const mesaParam = mesa;
   const mesaValida = Boolean(mesaParam && /^Mesa\s+\d+$/i.test(mesaParam));
+
+  useEffect(() => {
+    if (mesaValida) definirMesa(mesaParam!);
+  }, [definirMesa, mesaParam, mesaValida]);
 
   useEffect(() => {
     if (quantidadeTotal > 0) {

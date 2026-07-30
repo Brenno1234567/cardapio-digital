@@ -9,7 +9,8 @@ function ConteudoCarrinho() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { itens, alterarQuantidade, limparCarrinho } = useCartStore();
-  const mesaQr = searchParams.get("mesa");
+  const mesaSalva = useCartStore((state) => state.mesa);
+  const mesaQr = searchParams.get("mesa") ?? mesaSalva;
   const mesaValida = Boolean(mesaQr && /^Mesa\s+\d+$/i.test(mesaQr));
   const [retirarNoBalcao, setRetirarNoBalcao] = useState(false);
   const [cliente, setCliente] = useState("");
