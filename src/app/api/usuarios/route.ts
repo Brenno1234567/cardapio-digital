@@ -35,6 +35,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Cargo inválido." }, { status: 400 });
     }
 
+    if (cargoNormalizado === "admin") {
+      const usuariosExistentes = await db.select().from(usuarios);
+      const jaExisteAdmin = usuariosExistentes.some(
+        (usuario) => normalizeCargo(usuario.cargo) === "admin"
+      );
+
+      if (jaExisteAdmin) {
+        return NextResponse.json(
+          { error: "Já existe um administrador cadastrado." },
+          { status: 409 }
+        );
+      }
+    }
+
     const pinStr = String(pin).trim();
     if (pinStr.length < 4 || pinStr.length > 8 || !/^\d+$/.test(pinStr)) {
       return NextResponse.json(

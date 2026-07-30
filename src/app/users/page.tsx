@@ -19,6 +19,7 @@ export default function AdminUsersPage() {
   const [novoCargo, setNovoCargo] = useState<"Administrador" | "Cozinha" | "Atendente">("Atendente");
   const [novoPin, setNovoPin] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const jaExisteAdmin = usuarios.some((usuario) => usuario.cargo.toLowerCase() === "admin");
 
   const carregarUsuarios = async () => {
     try {
@@ -56,7 +57,8 @@ export default function AdminUsersPage() {
         carregarUsuarios();
         alert("Colaborador cadastrado com sucesso!");
       } else {
-        alert("Erro ao cadastrar colaborador.");
+        const data = await res.json().catch(() => null);
+        alert(data?.error || "Erro ao cadastrar colaborador.");
       }
     } catch (error) {
       console.error(error);
@@ -123,7 +125,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setNovoCargo(e.target.value as any)}
                 className="w-full px-4 py-2.5 rounded-xl border border-cinza-borda text-sm focus:outline-none focus:border-verde-normal bg-white"
               >
-                <option value="Administrador">Administrador</option>
+                <option value="Administrador" disabled={jaExisteAdmin}>Administrador{jaExisteAdmin ? " (já cadastrado)" : ""}</option>
                 <option value="Cozinha">Cozinha</option>
                 <option value="Atendente">Atendente</option>
               </select>
