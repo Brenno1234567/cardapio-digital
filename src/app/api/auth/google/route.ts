@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { setAuthCookies } from "../../../../lib/auth";
+import {
+  checkLoginRateLimit,
+  clearLoginRateLimit,
+  rateLimitError,
+  registerFailedLogin,
+} from "../../../../lib/login-rate-limit";
 
 export const runtime = "nodejs";
 
@@ -20,6 +26,14 @@ function allowedAdminEmails() {
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = await checkLoginRateLimit(request);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        rateLimitError(rateLimit.retryAfterSeconds!),
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
+      );
+    }
+
     const { idToken } = await request.json();
     if (!idToken || typeof idToken !== "string") {
       return NextResponse.json({ error: "Token Google invÃ¡lido." }, { status: 400 });
@@ -42,10 +56,18 @@ export async function POST(request: Request) {
     const email = account?.email?.toLowerCase();
 
     if (!response.ok || !email || !account?.emailVerified || !allowedAdminEmails().has(email)) {
+      const failedAttempt = await registerFailedLogin(request);
+      if (!failedAttempt.allowed) {
+        return NextResponse.json(
+          rateLimitError(failedAttempt.retryAfterSeconds!),
+          { status: 429, headers: { "Retry-After": String(failedAttempt.retryAfterSeconds) } }
+        );
+      }
       return NextResponse.json({ error: "Esta conta Google nÃ£o tem acesso." }, { status: 403 });
     }
 
     await setAuthCookies("admin");
+    await clearLoginRateLimit(request);
     return NextResponse.json({ success: true, cargo: "admin", nome: account?.displayName ?? email });
   } catch (error) {
     console.error("Erro no login Google:", error);

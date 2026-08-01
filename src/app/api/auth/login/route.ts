@@ -6,9 +6,23 @@ import {
   setAuthCookies,
   normalizeCargo,
 } from "../../../../lib/auth";
+import {
+  checkLoginRateLimit,
+  clearLoginRateLimit,
+  rateLimitError,
+  registerFailedLogin,
+} from "../../../../lib/login-rate-limit";
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = await checkLoginRateLimit(request);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        rateLimitError(rateLimit.retryAfterSeconds!),
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
+      );
+    }
+
     const body = await request.json().catch(() => null);
 
     if (!body?.pin || typeof body.pin !== "string") {
@@ -35,6 +49,13 @@ export async function POST(request: Request) {
     }
 
     if (!matchedUser) {
+      const failedAttempt = await registerFailedLogin(request);
+      if (!failedAttempt.allowed) {
+        return NextResponse.json(
+          rateLimitError(failedAttempt.retryAfterSeconds!),
+          { status: 429, headers: { "Retry-After": String(failedAttempt.retryAfterSeconds) } }
+        );
+      }
       return NextResponse.json({ error: "PIN incorreto." }, { status: 401 });
     }
 
@@ -44,6 +65,7 @@ export async function POST(request: Request) {
     }
 
     await setAuthCookies(cargo);
+    await clearLoginRateLimit(request);
 
     return NextResponse.json({
       success: true,

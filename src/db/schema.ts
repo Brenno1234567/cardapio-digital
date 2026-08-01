@@ -46,3 +46,10 @@ export const usuarios = sqliteTable("usuarios", {
   cargo: text("cargo").notNull(),
   pin: text("pin").notNull(),
 });
+
+export const tentativasLogin = sqliteTable("tentativas_login", {
+  identificador: text("identificador").primaryKey(),
+  tentativas: integer("tentativas").notNull().default(0),
+  bloqueadoAte: integer("bloqueado_ate"),
+  atualizadoEm: integer("atualizado_em").notNull(),
+});
