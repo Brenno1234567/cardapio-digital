@@ -3,6 +3,7 @@ import { db } from "../../../../db";
 import { produtos } from "../../../../db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin, isNextResponse } from "../../../../lib/auth";
+import { invalidarCacheProdutos } from "../../../../lib/produtos-cache";
 
 export async function PUT(
   request: Request,
@@ -34,6 +35,7 @@ export async function PUT(
         imagem: body.imagem?.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
       })
       .where(eq(produtos.id, id));
+    invalidarCacheProdutos();
 
     return NextResponse.json({ success: true, message: "Produto atualizado!" });
   } catch (error) {
@@ -52,6 +54,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await db.delete(produtos).where(eq(produtos.id, id));
+    invalidarCacheProdutos();
     return NextResponse.json({ success: true, message: "Produto excluído com sucesso!" });
   } catch (error) {
     console.error("Erro ao excluir produto:", error);

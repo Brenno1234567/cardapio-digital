@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../../../db";
 import { produtos } from "../../../db/schema";
 import { isNextResponse, requireAdmin } from "../../../lib/auth";
+import { invalidarCacheProdutos } from "../../../lib/produtos-cache";
 
 export async function PUT(request: Request) {
   const auth = await requireAdmin();
@@ -18,6 +19,7 @@ export async function PUT(request: Request) {
     }
 
     await db.update(produtos).set({ categoria: novaCategoria }).where(eq(produtos.categoria, categoriaAtual));
+    invalidarCacheProdutos();
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Não foi possível atualizar a categoria." }, { status: 500 });

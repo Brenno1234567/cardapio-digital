@@ -42,7 +42,7 @@ function LoginForm() {
       if (data.cargo === "cozinha") {
         router.push("/painel-pedidos");
       } else if (data.cargo === "admin") {
-        router.push("/cozinha");
+        router.push("/admin");
       } else {
         router.push("/cardapio");
       }
