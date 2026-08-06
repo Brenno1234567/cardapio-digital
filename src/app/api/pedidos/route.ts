@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "../../../db";
 import { pedidos, itensPedido, produtos, configuracoes } from "../../../db/schema";
 import { eq, inArray } from "drizzle-orm";
-import { requireKitchen, isNextResponse } from "../../../lib/auth";
+import { requireKitchen, requireAuth, isNextResponse } from "../../../lib/auth";
 import { pusherServer } from "../../../lib/pusher-server";
 
 interface ItemPedidoInput {
@@ -12,8 +12,41 @@ interface ItemPedidoInput {
   preco: number;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const idsParam = searchParams.get("ids");
+
+    // Cliente sem login: só pode buscar os próprios pedidos, informando os IDs
+    // (UUIDs aleatórios que ele mesmo recebeu ao criar o pedido).
+    if (idsParam !== null) {
+      const ids = idsParam
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+
+      if (ids.length === 0) {
+        return NextResponse.json([]);
+      }
+
+      const listaPedidos = await db.select().from(pedidos).where(inArray(pedidos.id, ids));
+      const listaItens = await db
+        .select()
+        .from(itensPedido)
+        .where(inArray(itensPedido.pedidoId, ids));
+
+      const pedidosComItens = listaPedidos.map((pedido) => ({
+        ...pedido,
+        itens: listaItens.filter((item) => item.pedidoId === pedido.id),
+      }));
+
+      return NextResponse.json(pedidosComItens);
+    }
+
+    // Listagem completa: só a equipe (admin, cozinha ou atendente) pode ver todos os pedidos.
+    const auth = await requireAuth(["admin", "cozinha", "atendente"]);
+    if (isNextResponse(auth)) return auth;
+
     const listaPedidos = await db.select().from(pedidos);
     const listaItens = await db.select().from(itensPedido);
 
@@ -109,6 +142,7 @@ export async function POST(request: Request) {
     const obsFormatada = String(observacao || "").trim().substring(0, 255);
 
     const pedidoId = crypto.randomUUID();
+    const tokenCancelamento = crypto.randomUUID();
     const criadoEm = new Date();
 
     // 1. Salva no banco de dados primeiro
@@ -121,6 +155,7 @@ export async function POST(request: Request) {
         observacao: obsFormatada,
         total: totalCalculado,
         criadoEm,
+        tokenCancelamento,
       });
 
       const itensParaSalvar = (itens as ItemPedidoInput[]).map((item) => {
@@ -147,7 +182,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { success: true, pedidoId, total: totalCalculado, message: "Pedido criado com sucesso!" },
+      { success: true, pedidoId, tokenCancelamento, total: totalCalculado, message: "Pedido criado com sucesso!" },
       { status: 201 }
     );
   } catch (error) {

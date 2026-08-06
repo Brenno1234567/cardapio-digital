@@ -1,0 +1,1 @@
+Next.js 16 (App Router) + React 19, TypeScript strict mode, Tailwind CSS v4 via @tailwindcss/postcss, Drizzle ORM with libSQL/Turso client, Firebase for auth, Pusher/Pusher-JS for real-time updates, Zustand for client state, Cloudinary for image storage, bcryptjs for password hashing, and tsx for running seed/migration scripts.

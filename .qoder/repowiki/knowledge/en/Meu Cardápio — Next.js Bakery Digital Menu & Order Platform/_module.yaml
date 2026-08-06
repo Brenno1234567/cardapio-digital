@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: ""
+title: Meu Cardápio — Next.js Bakery Digital Menu & Order Platform
+scope:
+    - .gitignore
+    - package.json
+    - package-lock.json
+    - next.config.ts
+    - drizzle.config.ts
+    - eslint.config.mjs
+    - postcss.config.mjs
+    - tsconfig.json
+    - AGENTS.md
+    - CLAUDE.md
+source_files: []
+depends_on: []
+related_to: []

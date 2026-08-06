@@ -12,7 +12,7 @@ function getFirebaseApp() {
   };
 
   if (Object.values(config).some((value) => !value)) {
-    throw new Error("Login Google ainda nÃ£o configurado.");
+    throw new Error("Login Google ainda não configurado.");
   }
 
   return getApps().length > 0 ? getApp() : initializeApp(config);

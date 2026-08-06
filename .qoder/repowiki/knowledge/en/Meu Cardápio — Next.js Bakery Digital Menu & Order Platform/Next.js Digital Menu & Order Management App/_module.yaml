@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: next_app
+title: Next.js Digital Menu & Order Management App
+scope:
+    - src/
+    - scripts/
+source_files: []
+depends_on: []
+related_to: []

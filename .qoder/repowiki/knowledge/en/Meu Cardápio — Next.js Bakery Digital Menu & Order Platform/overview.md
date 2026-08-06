@@ -1,0 +1,1 @@
+Root of the Meu Cardápio project, a Next.js App Router application that serves as both a public digital menu and an admin order-management panel backed by SQLite/Turso via Drizzle ORM.

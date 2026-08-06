@@ -7,8 +7,18 @@ import { Users, UserPlus, Shield, Trash2, ArrowLeft } from "lucide-react";
 interface Usuario {
   id: string;
   nome: string;
-  cargo: "Administrador" | "Cozinha" | "Atendente";
+  cargo: string;
   pin: string;
+}
+
+const CARGO_LABELS: Record<string, string> = {
+  admin: "Administrador",
+  cozinha: "Cozinha",
+  atendente: "Atendente",
+};
+
+function labelDoCargo(cargo: string) {
+  return CARGO_LABELS[cargo.toLowerCase()] ?? cargo;
 }
 
 export default function AdminUsersPage() {
@@ -171,10 +181,10 @@ export default function AdminUsersPage() {
                     <div className="min-w-0">
                       <p className="font-bold text-verde-escuro truncate">{usuario.nome}</p>
                       <span className={`inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                        usuario.cargo === "Administrador" ? "bg-purple-100 text-purple-700" :
-                        usuario.cargo === "Cozinha" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+                        usuario.cargo.toLowerCase() === "admin" ? "bg-purple-100 text-purple-700" :
+                        usuario.cargo.toLowerCase() === "cozinha" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
                       }`}>
-                        {usuario.cargo}
+                        {labelDoCargo(usuario.cargo)}
                       </span>
                       <p className="text-xs text-cinza-texto mt-2 font-mono tracking-widest">PIN: ••••</p>
                     </div>
@@ -206,10 +216,10 @@ export default function AdminUsersPage() {
                       <td className="py-3 px-4 font-bold text-verde-escuro">{usuario.nome}</td>
                       <td className="py-3 px-4">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-                          usuario.cargo === "Administrador" ? "bg-purple-100 text-purple-700" :
-                          usuario.cargo === "Cozinha" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+                          usuario.cargo.toLowerCase() === "admin" ? "bg-purple-100 text-purple-700" :
+                          usuario.cargo.toLowerCase() === "cozinha" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
                         }`}>
-                          {usuario.cargo}
+                          {labelDoCargo(usuario.cargo)}
                         </span>
                       </td>
                       <td className="py-3 px-4 font-mono tracking-widest text-cinza-texto">••••</td>

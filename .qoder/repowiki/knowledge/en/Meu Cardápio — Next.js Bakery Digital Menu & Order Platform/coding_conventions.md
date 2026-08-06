@@ -1,0 +1,4 @@
+- All imports use the `@/*` path alias mapped to the project root instead of relative paths.
+- Database schema, migrations, and queries are defined exclusively through Drizzle ORM with the Turso dialect, never raw SQL outside seed scripts.
+- Environment-sensitive configuration (database URL/auth token, external service endpoints) is read from `process.env` at startup rather than hardcoded.
+- TypeScript is configured with `strict: true`, `noEmit: true`, and `isolatedModules: true`, enforcing type-only compilation through Next's bundler.

@@ -21,7 +21,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const pinHash = await hashPin("1234");
+    // Gera um PIN aleatório de 6 dígitos em vez de um valor fixo e previsível.
+    const pinGerado = String(Math.floor(100000 + Math.random() * 900000));
+    const pinHash = await hashPin(pinGerado);
 
     await db.insert(usuarios).values({
       id: crypto.randomUUID(),
@@ -32,7 +34,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Admin criado. Use PIN 1234 para entrar.",
+      message: `Admin criado. Use o PIN ${pinGerado} para entrar (anote agora, ele não será mostrado de novo). Troque-o pelo painel de usuários assim que possível.`,
+      pin: pinGerado,
     });
   } catch (error) {
     console.error("Erro ao criar usuário:", error);

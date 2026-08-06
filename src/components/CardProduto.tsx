@@ -1,27 +1,44 @@
-import { Plus } from "lucide-react";
-import { useCartStore } from "../contexts/cartStore";
+import { parseOpcoesVariacao, type TipoVariacao } from "../contexts/cartStore";
 
-interface CardProdutoProps {
+export interface CardProdutoProps {
   id: string;
   nome: string;
   descricao: string;
   preco: number;
   imagem?: string;
+  tipoVariacao?: TipoVariacao;
+  opcoesVariacao?: string | null;
+  onClick: () => void;
 }
 
 const IMAGEM_PADRAO = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
 
-export default function CardProduto({ id, nome, descricao, preco, imagem }: CardProdutoProps) {
-  const adicionarItem = useCartStore((state) => state.adicionarItem);
+const precoFormatado = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
 
-  const precoFormatado = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(preco);
+export default function CardProduto({
+  nome,
+  descricao,
+  preco,
+  imagem,
+  tipoVariacao,
+  opcoesVariacao,
+  onClick,
+}: CardProdutoProps) {
+  const opcoes = parseOpcoesVariacao(opcoesVariacao);
+  const temVariacao = Boolean(tipoVariacao) && opcoes.length > 0;
+  const precoMinimo = temVariacao ? Math.min(...opcoes.map((o) => o.preco)) : preco;
 
   return (
-    <div className="bg-white p-3 rounded-2xl shadow-sm border border-cinza-borda/50 flex gap-3 sm:gap-4 items-stretch sm:items-center min-w-0 w-full h-full">
-      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 rounded-xl shrink-0 overflow-hidden">
+    <button
+      type="button"
+      onClick={onClick}
+      className="bg-white p-3 rounded-2xl shadow-sm border border-cinza-borda/50 flex gap-3 sm:gap-4 items-stretch sm:items-center min-w-0 w-full h-full text-left cursor-pointer hover:shadow-md hover:border-verde-normal/40 active:scale-[0.99] transition-all duration-200 group"
+    >
+      {/* Imagem */}
+      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 rounded-xl shrink-0 overflow-hidden ring-2 ring-transparent group-hover:ring-verde-normal/30 transition-all">
         <img
           src={imagem || IMAGEM_PADRAO}
           alt={nome}
@@ -30,21 +47,35 @@ export default function CardProduto({ id, nome, descricao, preco, imagem }: Card
         />
       </div>
 
-      <div className="flex-1 min-w-0 flex flex-col">
-        <h3 className="font-bold text-verde-escuro leading-tight truncate">{nome}</h3>
-        <p className="text-sm text-cinza-texto line-clamp-2 mt-1">{descricao}</p>
-        <div className="flex justify-between items-center gap-2 mt-auto pt-3">
-          <span className="font-bold text-verde-normal text-sm sm:text-base shrink-0">{precoFormatado}</span>
+      {/* Conteúdo */}
+      <div className="flex-1 min-w-0 flex flex-col gap-1">
+        <h3 className="font-bold text-verde-escuro leading-tight truncate group-hover:text-verde-normal transition-colors">
+          {nome}
+        </h3>
+        <p className="text-sm text-cinza-texto line-clamp-2">{descricao}</p>
 
-          <button
-            onClick={() => adicionarItem({ id, nome, preco })}
-            className="bg-verde-normal text-white p-1.5 rounded-full shadow-md hover:bg-verde-destaque transition-colors active:scale-95 shrink-0"
-            aria-label={`Adicionar ${nome} ao carrinho`}
-          >
-            <Plus size={20} />
-          </button>
+        <div className="flex items-center gap-2 mt-auto pt-1 flex-wrap">
+          {temVariacao ? (
+            <span className="font-bold text-verde-normal text-sm sm:text-base shrink-0">
+              a partir de {precoFormatado.format(precoMinimo)}
+            </span>
+          ) : (
+            <span className="font-bold text-verde-normal text-sm sm:text-base shrink-0">
+              {precoFormatado.format(preco)}
+            </span>
+          )}
+
+          {/* Badge de variação disponível */}
+          {temVariacao && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-verde-claro/50 text-verde-escuro border border-verde-normal/20">
+              {tipoVariacao === "tamanho" ? "Tamanhos" : "Pesos"}
+              <span className="text-cinza-texto normal-case tracking-normal">
+                ({opcoes.length} opções)
+              </span>
+            </span>
+          )}
         </div>
       </div>
-    </div>
+    </button>
   );
 }

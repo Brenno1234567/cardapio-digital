@@ -41,6 +41,8 @@ export async function POST(request: Request) {
       categoria: body.categoria || "Geral",
       status: "Ativo",
       imagem: body.imagem?.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+      tipoVariacao: body.tipoVariacao || null,
+      opcoesVariacao: body.tipoVariacao ? String(body.opcoesVariacao ?? "").trim() || null : null,
     });
     invalidarCacheProdutos();
 

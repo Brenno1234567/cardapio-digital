@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CardapioCliente } from "../page";
+import { CardapioCliente } from "../../../components/CardapioCliente";
 
 export default async function CardapioPorMesa({ params }: { params: Promise<{ mesa: string }> }) {
   const { mesa } = await params;

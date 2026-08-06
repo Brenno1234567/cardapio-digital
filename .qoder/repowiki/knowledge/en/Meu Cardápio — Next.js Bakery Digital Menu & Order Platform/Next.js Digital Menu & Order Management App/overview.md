@@ -1,0 +1,1 @@
+Next.js App Router application providing a digital menu, order management, and admin panel for a bakery/panificadora backed by SQLite via Drizzle ORM.

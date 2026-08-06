@@ -1,0 +1,36 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-08-06T16:04:03Z"
+modules:
+    "":
+        dir_name: Meu Cardápio — Next.js Bakery Digital Menu & Order Platform
+        title: Meu Cardápio — Next.js Bakery Digital Menu & Order Platform
+        scope:
+            - .gitignore
+            - package.json
+            - package-lock.json
+            - next.config.ts
+            - drizzle.config.ts
+            - eslint.config.mjs
+            - postcss.config.mjs
+            - tsconfig.json
+            - AGENTS.md
+            - CLAUDE.md
+        source_files: []
+        children:
+            - next_app
+        depends_on: []
+        related_to: []
+    next_app:
+        dir_name: Next.js Digital Menu & Order Management App
+        title: Next.js Digital Menu & Order Management App
+        scope:
+            - src/
+            - scripts/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

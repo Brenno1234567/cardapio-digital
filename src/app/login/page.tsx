@@ -43,6 +43,8 @@ function LoginForm() {
         router.push("/painel-pedidos");
       } else if (data.cargo === "admin") {
         router.push("/admin");
+      } else if (data.cargo === "atendente") {
+        router.push("/atendimento");
       } else {
         router.push("/cardapio");
       }
@@ -68,7 +70,7 @@ function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErro(data.error || "Esta conta Google nÃ£o tem acesso.");
+        setErro(data.error || "Esta conta Google não tem acesso.");
         return;
       }
 
@@ -77,7 +79,7 @@ function LoginForm() {
       router.push(redirect?.startsWith("/") ? redirect : "/admin");
     } catch (err) {
       console.error("Erro no login Google:", err);
-      setErro(err instanceof Error ? err.message : "NÃ£o foi possÃ­vel entrar com Google.");
+      setErro(err instanceof Error ? err.message : "Não foi possível entrar com Google.");
     } finally {
       setCarregando(false);
     }

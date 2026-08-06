@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { requireAdmin, isNextResponse } from "../../../lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,13 +8,33 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const TAMANHO_MAXIMO_BYTES = 5 * 1024 * 1024; // 5MB
+
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if (isNextResponse(auth)) return auth;
+
   try {
     const data = await request.formData();
     const file: File | null = data.get("file") as unknown as File;
 
     if (!file) {
       return NextResponse.json({ error: "Nenhum arquivo enviado." }, { status: 400 });
+    }
+
+    if (!TIPOS_PERMITIDOS.includes(file.type)) {
+      return NextResponse.json(
+        { error: "Formato inválido. Envie uma imagem JPEG, PNG, WEBP ou GIF." },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > TAMANHO_MAXIMO_BYTES) {
+      return NextResponse.json(
+        { error: "Imagem muito grande. Tamanho máximo permitido: 5MB." },
+        { status: 400 }
+      );
     }
 
     const bytes = await file.arrayBuffer();

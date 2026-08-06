@@ -1,0 +1,1 @@
+Next.js App Router, TypeScript, Drizzle ORM with libSQL/Turso client, bcryptjs for PIN hashing, Zustand + zustand/persist for client cart state, Firebase Auth (Google sign-in), Pusher for real-time updates, and SQLite as the embedded database.

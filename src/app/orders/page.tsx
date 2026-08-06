@@ -32,19 +32,17 @@ export default function TelaOrders() {
 
   const buscarMeusPedidos = async () => {
     try {
-      const idsSalvos: { id: string }[] = JSON.parse(localStorage.getItem("meusPedidos") || "[]");
+      const idsSalvos: { id: string; token?: string }[] = JSON.parse(localStorage.getItem("meusPedidos") || "[]");
       if (idsSalvos.length === 0) {
         setCarregando(false);
         return;
       }
 
-      const res = await fetch("/api/pedidos");
-      const todosPedidos: Pedido[] = await res.json();
-
       const ids = idsSalvos.map((p) => p.id);
-      const filtrados = todosPedidos.filter((p) => ids.includes(p.id));
+      const res = await fetch(`/api/pedidos?ids=${encodeURIComponent(ids.join(","))}`);
+      const meusPedidosEncontrados: Pedido[] = await res.json();
 
-      setMeusPedidos(filtrados);
+      setMeusPedidos(Array.isArray(meusPedidosEncontrados) ? meusPedidosEncontrados : []);
     } catch (err) {
       console.error("Erro ao buscar pedidos:", err);
     } finally {
@@ -59,7 +57,7 @@ export default function TelaOrders() {
     return () => clearInterval(intervalo);
   }, []);
 
-  const cancelarPedido = async (id: string) => { if (!window.confirm("Cancelar este pedido?")) return; const r = await fetch("/api/pedidos/cancelar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); const d = await r.json(); if (!r.ok) return alert(d.error || "Não foi possível cancelar."); setMeusPedidos((pedidos) => pedidos.map((pedido) => pedido.id === id ? { ...pedido, status: "cancelado" } : pedido)); };
+  const cancelarPedido = async (id: string) => { if (!window.confirm("Cancelar este pedido?")) return; const salvos: { id: string; token?: string }[] = JSON.parse(localStorage.getItem("meusPedidos") || "[]"); const pedidoSalvo = salvos.find((p) => p.id === id); const r = await fetch("/api/pedidos/cancelar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, token: pedidoSalvo?.token }) }); const d = await r.json(); if (!r.ok) return alert(d.error || "Não foi possível cancelar."); setMeusPedidos((pedidos) => pedidos.map((pedido) => pedido.id === id ? { ...pedido, status: "cancelado" } : pedido)); };
 
   const excluirDaLista = (id: string) => {
     if (!window.confirm("Remover este pedido da sua lista?")) return;

@@ -36,11 +36,11 @@ export async function POST(request: Request) {
 
     const { idToken } = await request.json();
     if (!idToken || typeof idToken !== "string") {
-      return NextResponse.json({ error: "Token Google invÃ¡lido." }, { status: 400 });
+      return NextResponse.json({ error: "Token Google inválido." }, { status: 400 });
     }
 
     const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    if (!apiKey) throw new Error("Firebase ainda nÃ£o configurado.");
+    if (!apiKey) throw new Error("Firebase ainda não configurado.");
 
     const response = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
           { status: 429, headers: { "Retry-After": String(failedAttempt.retryAfterSeconds) } }
         );
       }
-      return NextResponse.json({ error: "Esta conta Google nÃ£o tem acesso." }, { status: 403 });
+      return NextResponse.json({ error: "Esta conta Google não tem acesso." }, { status: 403 });
     }
 
     await setAuthCookies("admin");
@@ -71,6 +71,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, cargo: "admin", nome: account?.displayName ?? email });
   } catch (error) {
     console.error("Erro no login Google:", error);
-    return NextResponse.json({ error: "NÃ£o foi possÃ­vel validar login Google." }, { status: 401 });
+    return NextResponse.json({ error: "Não foi possível validar login Google." }, { status: 401 });
   }
 }

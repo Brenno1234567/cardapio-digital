@@ -37,14 +37,19 @@ function ConteudoCarrinho() {
           mesa: localPedido,
           cliente,
           observacao,
-          itens: itens.map((i) => ({ id: i.id, nome: i.nome, quantidade: i.quantidade, preco: i.preco })),
+          itens: itens.map((i) => ({
+            id: i.id,
+            nome: i.variacao ? `${i.nome} (${i.variacao})` : i.nome,
+            quantidade: i.quantidade,
+            preco: i.preco,
+          })),
         }),
       });
       const data = await resposta.json().catch(() => null);
       if (!resposta.ok) throw new Error(data?.error || "Erro ao enviar pedido.");
 
       const pedidosSalvos = JSON.parse(localStorage.getItem("meusPedidos") || "[]");
-      pedidosSalvos.push({ id: data.pedidoId });
+      pedidosSalvos.push({ id: data.pedidoId, token: data.tokenCancelamento });
       localStorage.setItem("meusPedidos", JSON.stringify(pedidosSalvos));
       alert("Pedido enviado com sucesso para a cozinha!");
       limparCarrinho();
@@ -72,7 +77,30 @@ function ConteudoCarrinho() {
       ) : (
         <>
           <div className="space-y-3 mb-6">
-            {itens.map((item) => <div key={item.id} className="bg-white p-4 rounded-2xl border border-cinza-borda/50 shadow-sm flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center min-w-0"><div className="min-w-0 flex-1"><h3 className="font-bold text-verde-escuro truncate">{item.nome}</h3><p className="text-xs text-cinza-texto">Qtd: {item.quantidade}x • {precoFormatado(item.preco)}</p></div><div className="flex items-center justify-between sm:justify-end gap-4 shrink-0"><span className="font-bold text-verde-normal">{precoFormatado(item.preco * item.quantidade)}</span><div className="flex items-center border border-cinza-borda rounded-lg overflow-hidden"><button onClick={() => alterarQuantidade(item.id, item.quantidade - 1)} className="p-2 text-verde-escuro hover:bg-verde-claro/40" aria-label="Diminuir"><Minus size={16} /></button><span className="min-w-8 text-center text-sm font-bold text-verde-escuro">{item.quantidade}</span><button onClick={() => alterarQuantidade(item.id, item.quantidade + 1)} className="p-2 text-verde-escuro hover:bg-verde-claro/40" aria-label="Aumentar"><Plus size={16} /></button></div></div></div>)}
+            {itens.map((item) => {
+              const itemKey = item.variacao ? `${item.id}::${item.variacao}` : item.id;
+              return (
+                <div key={itemKey} className="bg-white p-4 rounded-2xl border border-cinza-borda/50 shadow-sm flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center min-w-0">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-verde-escuro truncate">{item.nome}</h3>
+                    {item.variacao && (
+                      <span className="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-verde-claro/50 text-verde-escuro border border-verde-normal/20">
+                        {item.tipoVariacao === "tamanho" ? "Tam." : "Peso"}: {item.variacao}
+                      </span>
+                    )}
+                    <p className="text-xs text-cinza-texto mt-1">Qtd: {item.quantidade}x • {precoFormatado(item.preco)}</p>
+                  </div>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                    <span className="font-bold text-verde-normal">{precoFormatado(item.preco * item.quantidade)}</span>
+                    <div className="flex items-center border border-cinza-borda rounded-lg overflow-hidden">
+                      <button onClick={() => alterarQuantidade(item.id, item.quantidade - 1, item.variacao)} className="p-2 text-verde-escuro hover:bg-verde-claro/40" aria-label="Diminuir"><Minus size={16} /></button>
+                      <span className="min-w-8 text-center text-sm font-bold text-verde-escuro">{item.quantidade}</span>
+                      <button onClick={() => alterarQuantidade(item.id, item.quantidade + 1, item.variacao)} className="p-2 text-verde-escuro hover:bg-verde-claro/40" aria-label="Aumentar"><Plus size={16} /></button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="bg-white p-4 rounded-2xl border border-cinza-borda/50 shadow-sm space-y-4 mb-6">

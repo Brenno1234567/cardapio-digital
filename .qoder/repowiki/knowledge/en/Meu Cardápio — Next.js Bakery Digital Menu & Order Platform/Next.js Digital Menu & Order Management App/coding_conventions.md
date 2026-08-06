@@ -1,0 +1,6 @@
+- API route handlers return `NextResponse.json` with explicit status codes and uniform `{ error }` payloads for validation/auth failures.
+- Authorization is enforced centrally via `requireAuth` / `requireAdmin` / `requireKitchen` helpers that read role flags from httpOnly cookies and short-circuit with 401/403 responses.
+- Database writes are performed through lazy imports of `../../../db` inside route handlers to avoid bundling the SQLite client into the browser bundle.
+- Domain-scoped API routes mirror their data entities (`produtos`, `pedidos`, `usuarios`, `categorias`, `settings`) with separate files per resource and sub-routes for actions like `cancelar`.
+- Client-side state is modeled as Zustand stores with `persist` middleware keyed by a stable storage name (e.g., `lumiere-cart`) to survive page reloads.
+- External service clients (Firebase, Pusher) are initialized lazily and guarded against missing environment variables before use.

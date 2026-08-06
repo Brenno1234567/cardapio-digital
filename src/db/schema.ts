@@ -9,6 +9,10 @@ export const produtos = sqliteTable("produtos", {
   categoria: text("categoria").notNull(),
   status: text("status").notNull().default("Ativo"),
   imagem: text("imagem"),
+  // null = simples (sem variação), "tamanho" = P/M/G/GG, "peso" = 250g/500g/1kg
+  tipoVariacao: text("tipo_variacao"),
+  // String separada por vírgula com as opções disponíveis (ex: "P,M,G" ou "250g,500g,1kg")
+  opcoesVariacao: text("opcoes_variacao"),
 });
 
 // Tabela de Pedidos
@@ -20,6 +24,7 @@ export const pedidos = sqliteTable("pedidos", {
   observacao: text("observacao"),
   total: real("total").notNull(),
   criadoEm: integer("criado_em", { mode: "timestamp" }).notNull(),
+  tokenCancelamento: text("token_cancelamento"),
 });
 
 // Tabela de Itens do Pedido

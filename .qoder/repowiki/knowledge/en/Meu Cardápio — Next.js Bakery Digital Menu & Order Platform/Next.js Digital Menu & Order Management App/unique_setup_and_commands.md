@@ -1,0 +1,1 @@
+Requires environment variables for Turso (`TURSO_DATABASE_URL`, optional `TURSO_AUTH_TOKEN`), Firebase (`NEXT_PUBLIC_FIREBASE_*`), and Pusher (`NEXT_PUBLIC_PUSHER_KEY`, `NEXT_PUBLIC_PUSHER_CLUSTER`); without Firebase keys the Google sign-in path throws an error. Database schema is defined declaratively in `drizzle-orm/sqlite-core` and seeded via `db/seed.ts`.
